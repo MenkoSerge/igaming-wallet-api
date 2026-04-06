@@ -15,5 +15,6 @@ public class Main {
         // Списываем
         wallet.debit(200L);
         System.out.println("После debit: " + wallet.getBalance()); // 1300
+
     }
 }
