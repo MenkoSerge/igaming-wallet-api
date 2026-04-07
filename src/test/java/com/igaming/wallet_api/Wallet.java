@@ -16,9 +16,11 @@ public class Wallet {
     }
 
     public void debit(long amount) {
-        if (amount > balance) throw new IllegalArgumentException("Недостаточно средств");
+        if (amount > balance)
+            throw new InsufficientFundsException(amount, balance);
         balance -= amount;
     }
+
 
     public long getBalance() { return balance; }
     public String getUserId() { return userId; }

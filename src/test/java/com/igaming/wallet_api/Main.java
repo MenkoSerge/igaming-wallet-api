@@ -16,5 +16,17 @@ public class Main {
         wallet.debit(200L);
         System.out.println("После debit: " + wallet.getBalance()); // 1300
 
+        try {
+            wallet.debit(9999L);
+        } catch (InsufficientFundsException e) {
+            System.out.println("Нет денег: " + e.getMessage());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Неверный аргумент: " + e.getMessage());
+
+        } catch (Exception e) {
+            // ловит ВСЁ остальное — ставь всегда последним
+            System.out.println("Неизвестная ошибка: " + e.getMessage());
+        }
     }
 }
