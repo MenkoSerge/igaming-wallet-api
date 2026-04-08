@@ -1,5 +1,9 @@
 package com.igaming.wallet_api;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Wallet {
 
     private String userId;
@@ -24,4 +28,7 @@ public class Wallet {
 
     public long getBalance() { return balance; }
     public String getUserId() { return userId; }
+
+
+
 }
