@@ -1,41 +1,56 @@
 package com.igaming.wallet_api;
 
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class WalletService {
 
-    private Map<String,Long> balances = new HashMap<>();
+    private final WalletRepository walletRepository;
 
-
-    public WalletService (){
-        //test Data
-        balances.put("user-1",5000L);
-        balances.put("user-2",1200L);
+    public WalletService(WalletRepository walletRepository) {
+        this.walletRepository = walletRepository;
     }
 
-    public long getBalance(String userId){
-        return balances.getOrDefault(userId,0L);
+    public long getBalance(String userId) {
+        return walletRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Wallet not found: " + userId))
+                .getBalance();
     }
 
-    public void debit (String userId, long amount) {
-        long balance = getBalance(userId);
-        if (balance< amount) {
-            throw new InsufficientFundsException(amount,balance);
+    @Transactional
+
+    public long debit(String userId, long amount) {
+        WalletEntity wallet = walletRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Wallet not found: " + userId));
+
+        if (wallet.getBalance() < amount) {
+            throw new InsufficientFundsException(amount, wallet.getBalance());
         }
-        balances.put(userId, balance-amount);
+
+        wallet.setBalance(wallet.getBalance() - amount);
+        walletRepository.save(wallet);
+        return wallet.getBalance();
     }
 
-    public void credit (String userId, long amount){
-        long balance = getBalance(userId);
-        balances.put(userId, balance+ amount);
+    @Transactional
+    public long credit(String userId, long amount) {
+        WalletEntity wallet = walletRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Wallet not found: " + userId));
+
+        wallet.setBalance(wallet.getBalance() + amount);
+        walletRepository.save(wallet);
+        return wallet.getBalance();
     }
 
-    public void rollback (String userId,String txId, long amount) {
-        credit(userId, amount);
-        System.out.println("Rollback выполнен: txId=" + txId + " amount=" + amount);
+    @Transactional
+    public long rollback(String userId, String txId, long amount) {
+        return credit(userId, amount);
+    }
+
+    @Transactional
+    public WalletEntity createWallet(String userId, long initialBalance) {
+        WalletEntity wallet = new WalletEntity(userId, initialBalance);
+        return walletRepository.save(wallet);
     }
 }

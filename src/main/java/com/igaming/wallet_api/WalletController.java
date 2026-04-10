@@ -12,6 +12,12 @@ public class WalletController {
         this.walletService = walletService;
     }
 
+    @PostMapping("/create/{userId}/{initialBalance}")
+    public WalletEntity createWallet(@PathVariable String userId,
+                                     @PathVariable long initialBalance) {
+        return walletService.createWallet(userId, initialBalance);
+    }
+
     @GetMapping("/{userId}/balance")
     public long getBalance(@PathVariable String userId) {
         return walletService.getBalance(userId);
@@ -20,24 +26,19 @@ public class WalletController {
     @PostMapping("/{userId}/debit/{amount}")
     public long debit(@PathVariable String userId,
                       @PathVariable long amount) {
-        walletService.debit(userId, amount);
-        return walletService.getBalance(userId);
+        return walletService.debit(userId, amount);
     }
 
     @PostMapping("/{userId}/credit/{amount}")
     public long credit(@PathVariable String userId,
                        @PathVariable long amount) {
-        walletService.credit(userId, amount);
-        return walletService.getBalance(userId);
+        return walletService.credit(userId, amount);
     }
 
-    @PostMapping ("/{userId}/rollback/{txId}/{amount}")
-    public long rollback (@PathVariable String userId,
-                          @PathVariable String txId,
-                          @PathVariable long amount) {
-        walletService.rollback(userId, txId, amount);
-        return walletService.getBalance(userId);
+    @PostMapping("/{userId}/rollback/{txId}/{amount}")
+    public long rollback(@PathVariable String userId,
+                         @PathVariable String txId,
+                         @PathVariable long amount) {
+        return walletService.rollback(userId, txId, amount);
     }
-
-
 }
