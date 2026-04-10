@@ -33,4 +33,9 @@ public class WalletService {
         long balance = getBalance(userId);
         balances.put(userId, balance+ amount);
     }
+
+    public void rollback (String userId,String txId, long amount) {
+        credit(userId, amount);
+        System.out.println("Rollback выполнен: txId=" + txId + " amount=" + amount);
+    }
 }

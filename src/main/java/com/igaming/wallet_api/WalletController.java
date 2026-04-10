@@ -30,4 +30,14 @@ public class WalletController {
         walletService.credit(userId, amount);
         return walletService.getBalance(userId);
     }
+
+    @PostMapping ("/{userId}/rollback/{txId}/{amount}")
+    public long rollback (@PathVariable String userId,
+                          @PathVariable String txId,
+                          @PathVariable long amount) {
+        walletService.rollback(userId, txId, amount);
+        return walletService.getBalance(userId);
+    }
+
+
 }
