@@ -1,6 +1,7 @@
 package com.igaming.wallet_api;
 
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/wallet")
@@ -23,16 +24,19 @@ public class WalletController {
         return walletService.getBalance(userId);
     }
 
-    @PostMapping("/{userId}/debit/{amount}")
+    @PostMapping("/{userId}/debit/{amount}/{txId}")
+    // txId теперь часть URL — провайдер передаёт свой уникальный ID
     public long debit(@PathVariable String userId,
-                      @PathVariable long amount) {
-        return walletService.debit(userId, amount);
+                      @PathVariable long amount,
+                      @PathVariable String txId) {
+        return walletService.debit(userId, amount, txId);
     }
 
-    @PostMapping("/{userId}/credit/{amount}")
+    @PostMapping("/{userId}/credit/{amount}/{txId}")
     public long credit(@PathVariable String userId,
-                       @PathVariable long amount) {
-        return walletService.credit(userId, amount);
+                       @PathVariable long amount,
+                       @PathVariable String txId) {
+        return walletService.credit(userId, amount, txId);
     }
 
     @PostMapping("/{userId}/rollback/{txId}/{amount}")
@@ -40,5 +44,11 @@ public class WalletController {
                          @PathVariable String txId,
                          @PathVariable long amount) {
         return walletService.rollback(userId, txId, amount);
+    }
+
+    @GetMapping("/{userId}/history")
+    // Новый эндпоинт — история всех транзакций пользователя
+    public List<TransactionEntity> getHistory(@PathVariable String userId) {
+        return walletService.getHistory(userId);
     }
 }
